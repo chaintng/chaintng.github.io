@@ -3,7 +3,6 @@
   
   function init() {
     var mapProp = {
-      center:new google.maps.LatLng(51.508742,-0.120850),
       zoom:5,
       mapTypeId:google.maps.MapTypeId.ROADMAP
     };
@@ -22,6 +21,7 @@
 	$('body').on('mouseout', 'li', function(){
 		markers[$(this).attr('target')].setAnimation(null);
 	});
+    showNearBy();
   }
 
   var markers = [];
