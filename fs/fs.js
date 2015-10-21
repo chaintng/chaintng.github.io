@@ -76,7 +76,7 @@
 
 openContextMenu = function(e) {
     var locationJson = JSON.stringify(e.location);
-    e.add('<div class=""><a onClick=\'searchPoiFromPoint(' + locationJson + ')\'>ค้นหา POI บริเวณนี้</a></div>');
+    e.add('<div class=""><a onClick=\'searchPoiFromPoint(' + locationJson + ')\'>Find POI near this place</a></div>');
 }
 
 function searchPoiFromPoint(latLon){
