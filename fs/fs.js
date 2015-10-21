@@ -137,6 +137,7 @@ function clearMarkers(){
 	markers.forEach(function(item){
 		item.setMap(null);
 	});
+	markers = [];
 }
 
 function attachPopupDetail(marker, detail){
