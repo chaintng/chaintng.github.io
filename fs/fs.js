@@ -3,7 +3,7 @@
   	map = new longdo.Map({
   		placeholder: document.getElementById('map')
   	});
-
+    map.Event.bind('beforeContextmenu', openContextMenu);
   	$('#tophotel').change(function(){
   		hotelItem = hotelJson[$(this).val()];
   		$('#latlon').val(hotelItem.latitude + ", " + hotelItem.longitude);
@@ -74,6 +74,15 @@
 });
 }
 
+openContextMenu = function(e) {
+    var locationJson = JSON.stringify(e.location);
+    e.add('<div class=""><a onClick=\'searchPoiFromPoint(' + locationJson + ')\'>ค้นหา POI บริเวณนี้</a></div>');
+}
+
+function searchPoiFromPoint(latLon){
+  $('#latlon').val(latLon.lat + ", " + latLon.lon);
+  showNearBy();
+}
 function showCategory(){
   	if($('.category-list').hasClass('hide')){
 		$('.category-list').removeClass('hide');
