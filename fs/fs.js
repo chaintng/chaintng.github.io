@@ -54,6 +54,7 @@
   			ll: latval + ', ' + lonval,
 			section: $('#section').val(),
 			locale: 'en',
+			sortByDistance: 0,
 		};
 	if($('#radius').val() != ""){
 		sendData.radius = $('#radius').val();
