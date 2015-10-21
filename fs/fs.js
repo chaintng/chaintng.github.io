@@ -14,6 +14,17 @@
   	map.Overlays.clear();
   	lonval = $('#latlon').val().split(',')[1].trim();
   	latval = $('#latlon').val().split(',')[0].trim();
+  	var hotelMarker = new longdo.Marker({ lon: lonval, lat: latval },
+	{
+	  title: 'Search Position',
+	  icon: {
+		url: 'http://map.longdo.com/mmmap/images/pin_mark.png',
+		offset: { x: 12, y: 45 }
+	  },
+	  detail: 'Search Position'
+	});
+	map.Overlays.add(hotelMarker);
+
   	sendData = {
   			ll: latval + ', ' + lonval,
 			section: $('#section').val(),
@@ -76,7 +87,7 @@
 
 openContextMenu = function(e) {
     var locationJson = JSON.stringify(e.location);
-    e.add('<div class=""><a onClick=\'searchPoiFromPoint(' + locationJson + ')\'>Find POI near this place</a></div>');
+    e.add('<div class=""><a onClick=\'searchPoiFromPoint(' + locationJson + ')\'>ค้นหา POI บริเวณนี้</a></div>');
 }
 
 function searchPoiFromPoint(latLon){
