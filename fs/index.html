@@ -2,6 +2,7 @@
 <head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<script type="text/javascript" src="http://api.longdo.com/map/?key=2471c590466e62c47b90e6cab8f4e88c"></script>
+	<script src="http://maps.googleapis.com/maps/api/js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script src="prettify/prettify.js"></script>
@@ -12,6 +13,9 @@
 	<style>
 		.icon {
 			width: 16px;
+		}
+		#map {
+			height: 100%;
 		}
 	</style>
 </head>
@@ -66,7 +70,7 @@
 					<div id="output"></div>
 				</div>
 			</div>
-			<div class="col-sm-6">
+			<div class="col-sm-6" style="padding-right:0px;">
 				<div id="map"></div>
 			</div>
 		</div>

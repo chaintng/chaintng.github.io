@@ -1,29 +1,54 @@
   var map;
+  var activeInfoWindow;
+  
   function init() {
-  	map = new longdo.Map({
-  		placeholder: document.getElementById('map')
-  	});
-    map.Event.bind('beforeContextmenu', openContextMenu);
-  	$('#tophotel').change(function(){
+    var mapProp = {
+      center:new google.maps.LatLng(51.508742,-0.120850),
+      zoom:5,
+      mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+    map=new google.maps.Map(document.getElementById("map"),mapProp);
+    map.addListener('rightclick', function(e){
+    	searchPoiFromPoint(e.latLng.lat() + ", " + e.latLng.lng());
+    });
+    $('#tophotel').change(function(){
   		hotelItem = hotelJson[$(this).val()];
   		$('#latlon').val(hotelItem.latitude + ", " + hotelItem.longitude);
   	});
+	$('body').on('mouseenter', 'li', function(){
+		markers[$(this).attr('target')].setAnimation(google.maps.Animation.BOUNCE);
+	});
+	
+	$('body').on('mouseout', 'li', function(){
+		markers[$(this).attr('target')].setAnimation(null);
+	});
   }
 
+  var markers = [];
+
   function showNearBy(){
-  	map.Overlays.clear();
+  	clearMarkers();
   	lonval = $('#latlon').val().split(',')[1].trim();
   	latval = $('#latlon').val().split(',')[0].trim();
-  	var hotelMarker = new longdo.Marker({ lon: lonval, lat: latval },
-	{
-	  title: 'Search Position',
-	  icon: {
-		url: 'http://map.longdo.com/mmmap/images/pin_mark.png',
-		offset: { x: 12, y: 45 }
-	  },
-	  detail: 'Search Position'
+  	hotelIcon = {url: 'pinkpin.png', size: new google.maps.Size(20, 20), origin: new google.maps.Point(0,0),
+    	anchor: new google.maps.Point(0, 20)};
+	var hotelMarker=new google.maps.Marker({
+		position: new google.maps.LatLng(latval,lonval),
+		animation: google.maps.Animation.DROP,
+		icon: 'hotel-icon.png',
 	});
-	map.Overlays.add(hotelMarker);
+	hotelMarker.setMap(map);
+	markers.push(hotelMarker);
+//   	var hotelMarker = new longdo.Marker({ lon: lonval, lat: latval },
+// 	{
+// 	  title: 'Search Position',
+// 	  icon: {
+// 		url: 'http://map.longdo.com/mmmap/images/pin_mark.png',
+// 		offset: { x: 12, y: 45 }
+// 	  },
+// 	  detail: 'Search Position'
+// 	});
+// 	map.Overlays.add(hotelMarker);
 
   	sendData = {
   			ll: latval + ', ' + lonval,
@@ -33,7 +58,7 @@
 	if($('#radius').val() != ""){
 		sendData.radius = $('#radius').val();
 	}	
-  	map.location({lon:lonval, lat:latval});
+	map.setCenter(hotelMarker.getPosition());
   	$.ajax("https://api.foursquare.com/v2/venues/explore?v=20130815&client_id=VZTOKRYT2YB1ECOF3X1Q10FWPFQ5SI2ZMIJ0OW15ECUU2FAR&client_secret=0YATSWV0PJSNOJURN3TXDXKVTOFP3GFIR0ABFTP5ZYV2PPW3%20&open", {
   		data: sendData
 	})
@@ -44,32 +69,38 @@
   		groups.forEach(function(b){
   			output += '<h1>'+b.type+'</h1><ul>'
   			items = b.items;
-  			poiList = [];
+  			var latlngbounds = new google.maps.LatLngBounds();
+  			var i = 1;
   			items.forEach(function(ei){
   				itemCategory = ei.venue.categories[0];
-  				output += '<li><img src="'+itemCategory.icon.prefix+'bg_32.png" class="icon" alt="'+itemCategory.name+'"/> ';
+  				output += '<li target="'+i+'"><img src="'+itemCategory.icon.prefix+'bg_32.png" class="icon" alt="'+itemCategory.name+'"/> ';
   				output += ei.venue.name+' [<a href="#" class="toggle-desc">Show</a>]';
   				output += '<div class="hide desc"><pre class="prettyprint">'+JSON.stringify(ei, null, 2)+'</pre></div></li>';
-  				poiList.push({lon: ei.venue.location.lng, lat: ei.venue.location.lat});
+  				
   				detail = '';
   				categoryName = itemCategory.name;
   				categoryList[categoryName] = (typeof categoryList[categoryName] == "undefined") ? 1 : categoryList[categoryName] + 1;
-  				detail += "<b>" + categoryName + "</b><br/>";
+  				detail += "<b>" + ei.venue.name + "</b> - <i>"+categoryName+"</i><br/>";
   				if(ei.tips){
   					if(typeof ei.tips[0].photourl != 'undefined'){
   						detail += "<img src='"+ei.tips[0].photourl+"' style='width:100px;float:left'/>";
   					}
   					detail += ei.tips[0].text;
   				}
-  				tmpMarker = new longdo.Marker({lon: ei.venue.location.lng, lat: ei.venue.location.lat}, 
-  				{
-  					title: ei.venue.name,
-  					detail: detail,
-  					size: {width: 300}
-  				});
-  				map.Overlays.add(tmpMarker);
+  					tmpMarker = new google.maps.Marker({
+					  position: new google.maps.LatLng(ei.venue.location.lat,ei.venue.location.lng),
+						animation: google.maps.Animation.DROP,
+					});
+					tmpMarker.target = i;
+					attachPopupDetail(tmpMarker, detail);
+					tmpMarker.setMap(map);
+					markers.push(tmpMarker);
+					latlngbounds.extend(tmpMarker.position);
+//   				map.Overlays.add(tmpMarker);
+				i++;
   			});
-  			appropriateZoom(map, poiList);
+  			map.fitBounds(latlngbounds);
+//   			appropriateZoom(map, poiList);
   			output += '</ul>';
   		});
   output = "<h3><a onclick='showCategory()'>See Category List</a></h3><pre class='prettyprint category-list hide'>"+JSON.stringify(categoryList, null, 2)+"</pre>" + output;
@@ -91,7 +122,7 @@ openContextMenu = function(e) {
 }
 
 function searchPoiFromPoint(latLon){
-  $('#latlon').val(latLon.lat + ", " + latLon.lon);
+  $('#latlon').val(latLon);
   showNearBy();
 }
 function showCategory(){
@@ -100,4 +131,27 @@ function showCategory(){
   	}else{
 		$('.category-list').addClass('hide');
   	}
+}
+
+function clearMarkers(){
+	markers.forEach(function(item){
+		item.setMap(null);
+	});
+}
+
+function attachPopupDetail(marker, detail){
+	marker['infowindow'] = new google.maps.InfoWindow({
+		content: detail
+	});
+	marker.addListener('click', function(){
+        if ( activeInfoWindow == this['infowindow'] ) {
+            return;
+        }
+        if ( activeInfoWindow ) {
+            activeInfoWindow.close();
+        }
+
+        this['infowindow'].open(map, this);
+        activeInfoWindow = this['infowindow'];
+	});
 }
