@@ -150,7 +150,8 @@ function attachPopupDetail(marker, detail){
         if ( activeInfoWindow ) {
             activeInfoWindow.close();
         }
-
+        $('li').css('background-color', '');
+		$('li[target='+this.target+']').css('background-color', '#FFFF00');
         this['infowindow'].open(map, this);
         activeInfoWindow = this['infowindow'];
 	});
