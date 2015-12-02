@@ -53,7 +53,7 @@
   	sendData = {
   			ll: latval + ', ' + lonval,
 			section: $('#section').val(),
-			locale: 'en',
+			locale: $('#locale').val(),
 			sortByDistance: 0,
 		};
 	if($('#radius').val() != ""){
@@ -86,7 +86,8 @@
   					if(typeof ei.tips[0].photourl != 'undefined'){
   						detail += "<img src='"+ei.tips[0].photourl+"' style='width:100px;float:left'/>";
   					}
-  					detail += ei.tips[0].text;
+					detail += "<br/><b>Desc:</b> " +ei.description;
+  					detail += "<br/><b>Tips:</b> " +ei.tips[0].text;
   				}
   					tmpMarker = new google.maps.Marker({
 					  position: new google.maps.LatLng(ei.venue.location.lat,ei.venue.location.lng),
