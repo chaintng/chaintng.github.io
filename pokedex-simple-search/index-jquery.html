@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>Hello React!</title>
+    <title>Hello jQuery!</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react-dom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
@@ -45,23 +45,7 @@
 
 <script type="text/babel">
 
-    // 1. set Listener for each filter
-    $("#pokemonTypeFilter").on('change', function(){
-        var filterPokemonType = this.value;
-        var filterPokemonAtk = $("#pokemonAtkFilter").value;
-        var filterPokemon = filterPokemonByTypeAndMinAtk(allPokemons, filterPokemonType, filterPokemonAtk);
-        renderPokemonList(filterPokemon);
-    });
-
-    $("#pokemonAtkFilter").on('keyup', function(){
-        var filterPokemonAtk = $this.value;
-        var filterPokemonType = $("#pokemonTypeFilter").value;
-        var filterPokemon = filterPokemonByTypeAndMinAtk(allPokemons, filterPokemonType, filterPokemonAtk);
-        renderPokemonList(filterPokemon);
-    });
-
-
-    // 2. dirty filter function (same as react code)
+    // 0. dirty filter function (same as react code)
     var filterPokemonByTypeAndMinAtk = function (allPokemons, filterPokemonType, filterPokemonAtk) {
         var filterPokemon = [];
         Object.keys(allPokemons).forEach(function(key) {
@@ -74,17 +58,33 @@
         return filterPokemon;
     }
 
-    // 3. set render function
+    // 1. set Listener for each filter
+    $("#pokemonTypeFilter").on('change', function(){
+        var filterPokemonType = this.value;
+        var filterPokemonAtk = $("#pokemonAtkFilter").value;
+        var filterPokemon = filterPokemonByTypeAndMinAtk(allPokemons, filterPokemonType, filterPokemonAtk);
+        renderPokemonList(filterPokemon);
+    });
+
+    $("#pokemonAtkFilter").on('keyup', function(){
+        var filterPokemonAtk = this.value;
+        var filterPokemonType = $("#pokemonTypeFilter").value;
+        var filterPokemon = filterPokemonByTypeAndMinAtk(allPokemons, filterPokemonType, filterPokemonAtk);
+        renderPokemonList(filterPokemon);
+    });
+
+    // 2. set render function
     var renderPokemonList = function(filterPokemon) {
         $("#filterPokemonCount").html(filterPokemon.length);
         var liStrings = filterPokemon.map(function (item) {
+
            return "<li>" + item.name + " (Atk: " + item.attack + ", Def: " + item.defense + ")</li>";
         });
         $("#pokemonListUl").html(liStrings);
     }
 
 
-    // 4. initial render all pokemon first time
+    // 3. initial render all pokemon first time
     renderPokemonList(filterPokemonByTypeAndMinAtk(allPokemons));
 
 </script>
