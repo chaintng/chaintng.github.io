@@ -5,4 +5,4 @@ aliases:
 
 ```
 # Slide Deck
-![[obsidian-kss.pdf]]
+[[obsidian-kss.pdf]]
