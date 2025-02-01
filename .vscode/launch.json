@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Open index.html",
-            "file": "/Users/chaintng/Projects/chaintng.github.io/index.html"
+            "file": "/Users/chaintng/Projects/obsidian/published/chaintng.github.io/public/index.html"
         }
     ]
 }
